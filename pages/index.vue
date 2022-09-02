@@ -46,7 +46,7 @@ export default {
   methods:{
     play(){
         // IMPORTANT call the start capture function
-        if(document.body.startCapture) document.body.startCapture();
+        if(window._puppeteerStartCapture) window._puppeteerStartCapture();
         if(this.intId) clearTimeout(this.intId);
         
         this.started = true;
@@ -73,7 +73,7 @@ export default {
       this.counter++;
       if(this.counter>=30){
         this.txt="END";
-        if(window.stopCapture) window.stopCapture()
+        if(window._puppeteerStopCapture) window._puppeteerStopCapture()
       } else {
         this.txt = `${_.sample(words).toUpperCase()} [${this.counter}]`;
       }
