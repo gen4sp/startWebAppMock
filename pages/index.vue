@@ -28,38 +28,56 @@ export default {
   data(){
     return {
       started: false,
-      countdown:3,
+      counter:3,
       txt: '...',
       subtext: 'Anything',
+      intId: null,
     }
   },
   mounted(){
     const params = new Proxy(new URLSearchParams(window.location.search), {
         get: (searchParams, prop) => searchParams.get(prop),
     });
-    if(params.label){
-      this.subtext = params.label; // "some_value"
+    if(params.jsonString){
+      this.subtext = params.jsonString; // "some_value"
     }
-    
-    this.runTextRoutine()
+    this.runCountdown()
   },
   methods:{
+    play(){
+        // IMPORTANT call the start capture function
+        if(document.body.startCapture) document.body.startCapture();
+        if(this.intId) clearTimeout(this.intId);
+        
+        this.started = true;
+        window.document.playbackStarted = true;
+        this.counter = 0;
+        
+        this.runRandomtext()
+    },
     runTextRoutine(){
       this.runCountdown()
     },
     runCountdown(){
-      this.txt = this.countdown;
-      this.countdown--;
-      if(this.countdown<0){
-        this.runRandomtext()
-        this.started = true;
+      this.txt = this.counter;
+      this.counter--;
+      if(this.counter<0){
+        this.play();
       }else{
-        setTimeout(() => this.runCountdown(), 1000)
+        
+        this.intId = setTimeout(() => this.runCountdown(), 1000)
       }
     },
     runRandomtext(){
-      this.txt = _.sample(words).toUpperCase();
-      setTimeout(() => this.runRandomtext(), 150)
+      
+      this.counter++;
+      if(this.counter>=30){
+        this.txt="END";
+        if(window.stopCapture) window.stopCapture()
+      } else {
+        this.txt = `${_.sample(words).toUpperCase()} [${this.counter}]`;
+      }
+      this.intId = setTimeout(() => this.runRandomtext(), 150)
     }
   }
 }
